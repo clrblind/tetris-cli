@@ -17,6 +17,26 @@ func TestNewPiece(t *testing.T) {
 	}
 }
 
+func TestBagRandomizerAllPiecesInWindow(t *testing.T) {
+	br := NewBagRandomizer()
+	// In every 7-piece window, all 7 types must appear exactly once
+	for i := 0; i < 100; i++ {
+		seen := make(map[int]int)
+		for j := 0; j < 7; j++ {
+			p := br.Next()
+			seen[p]++
+		}
+		if len(seen) != 7 {
+			t.Errorf("Window %d: expected 7 unique pieces, got %d", i, len(seen))
+		}
+		for typ, count := range seen {
+			if count != 1 {
+				t.Errorf("Window %d: piece %d appeared %d times (expected 1)", i, typ, count)
+			}
+		}
+	}
+}
+
 func TestRotate(t *testing.T) {
 	// Test rotation of I-piece (horizontal to vertical)
 	p := Piece{

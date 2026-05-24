@@ -1,7 +1,5 @@
 package game
 
-import "math/rand"
-
 const (
 	BoardWidth  = 10
 	BoardHeight = 20
@@ -39,7 +37,7 @@ var shapes = [][][]int{
 
 // NewPiece creates a new random Tetris piece.
 func NewPiece() Piece {
-	pieceType := rand.Intn(len(shapes))
+	pieceType := defaultRandomizer.Next()
 	shape := shapes[pieceType]
 	// Position piece at top-center
 	startPos := Position{X: BoardWidth/2 - len(shape[0])/2, Y: 0}
