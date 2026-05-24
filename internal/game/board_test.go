@@ -38,6 +38,23 @@ func TestIsValidPosition(t *testing.T) {
 	}
 }
 
+func TestPlacePieceOutOfBounds(t *testing.T) {
+	b := NewBoard()
+	p := Piece{
+		Shape:      [][]int{{1, 1}, {1, 1}},
+		Pos:        Position{X: 0, Y: -2},
+		ColorIndex: 1,
+	}
+	b.PlacePiece(p)
+	for y := 0; y < BoardHeight; y++ {
+		for x := 0; x < BoardWidth; x++ {
+			if b[y][x] != 0 {
+				t.Errorf("Board should be empty after placing out-of-bounds piece, got %d at (%d,%d)", b[y][x], x, y)
+			}
+		}
+	}
+}
+
 func TestPlacePieceAndClearLines(t *testing.T) {
 	b := NewBoard()
 	

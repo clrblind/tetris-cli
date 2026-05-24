@@ -27,7 +27,9 @@ func (b *Board) IsValidPosition(p Piece) bool {
 // PlacePiece places a piece onto the board.
 func (b *Board) PlacePiece(p Piece) {
 	for _, block := range p.Blocks() {
-		b[block.Y][block.X] = p.ColorIndex
+		if block.Y >= 0 && block.Y < BoardHeight && block.X >= 0 && block.X < BoardWidth {
+			b[block.Y][block.X] = p.ColorIndex
+		}
 	}
 }
 
