@@ -41,8 +41,8 @@ var (
 		lipgloss.Color("2"), // Green (O)
 		lipgloss.Color("3"), // Yellow (T)
 		lipgloss.Color("4"), // Blue (S)
-		lipgloss.Color("5"), // Cyan (Z)
-		lipgloss.Color("6"), // Magenta (J)
+		lipgloss.Color("5"), // Magenta (Z)
+		lipgloss.Color("6"), // Cyan (J)
 		lipgloss.Color("7"), // White (L)
 	}
 
