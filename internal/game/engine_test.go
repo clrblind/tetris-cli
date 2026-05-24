@@ -112,6 +112,72 @@ func TestGhostBlocks(t *testing.T) {
 	}
 }
 
+func TestHoldFirstTime(t *testing.T) {
+	e := NewEngine()
+	initialType := e.CurrentPiece.Type
+	nextType := e.NextPiece.Type
+
+	e.Hold()
+	if e.HeldPiece == nil {
+		t.Fatal("Expected held piece after first Hold call")
+	}
+	if e.HeldPiece.Type != initialType {
+		t.Errorf("Expected held piece type %d, got %d", initialType, e.HeldPiece.Type)
+	}
+	if e.CurrentPiece.Type != nextType {
+		t.Errorf("Expected current piece to be the old next piece (type %d), got type %d", nextType, e.CurrentPiece.Type)
+	}
+	if e.CanHold {
+		t.Error("Expected CanHold to be false after holding")
+	}
+}
+
+func TestHoldSwap(t *testing.T) {
+	e := NewEngine()
+	e.Hold() // first hold
+	firstHeldType := e.HeldPiece.Type
+	currentAfterFirstHold := e.CurrentPiece.Type
+
+	// Reset CanHold to simulate piece lock
+	e.CanHold = true
+	e.Hold() // swap: current <-> held
+
+	if e.HeldPiece == nil {
+		t.Fatal("Expected held piece after swap")
+	}
+	if e.CurrentPiece.Type != firstHeldType {
+		t.Errorf("Expected current piece type %d (was held), got %d", firstHeldType, e.CurrentPiece.Type)
+	}
+	if e.HeldPiece.Type != currentAfterFirstHold {
+		t.Errorf("Expected held piece type %d (was current), got %d", currentAfterFirstHold, e.HeldPiece.Type)
+	}
+}
+
+func TestHoldDisallowsDoubleHold(t *testing.T) {
+	e := NewEngine()
+	e.Hold()
+	currentAfterFirstHold := e.CurrentPiece.Type
+	e.Hold() // should do nothing since CanHold is false
+	if e.CurrentPiece.Type != currentAfterFirstHold {
+		t.Error("Expected double hold to be ignored")
+	}
+}
+
+func TestHoldCanResetOnLock(t *testing.T) {
+	e := NewEngine()
+	e.Hold()
+	if e.CanHold {
+		t.Fatal("CanHold should be false after hold")
+	}
+
+	for !e.Tick() {
+	}
+
+	if !e.CanHold {
+		t.Error("Expected CanHold to be true after lockPiece")
+	}
+}
+
 func TestWallKickAllFiveOffsetsFail(t *testing.T) {
 	e := NewEngine()
 	// I-piece pinned against left wall and blocks — all 5 offsets should fail

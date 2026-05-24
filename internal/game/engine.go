@@ -7,6 +7,8 @@ type Engine struct {
 	CurrentPiece Piece
 	NextPiece    Piece
 	GameOver     bool
+	HeldPiece    *Piece
+	CanHold      bool
 }
 
 // NewEngine creates a new game engine.
@@ -16,6 +18,7 @@ func NewEngine() *Engine {
 		Score:        NewScoreManager(),
 		CurrentPiece: NewPiece(),
 		NextPiece:    NewPiece(),
+		CanHold:      true,
 	}
 }
 
@@ -43,6 +46,8 @@ func (e *Engine) lockPiece() {
 	e.Board.PlacePiece(e.CurrentPiece)
 	lines := e.Board.ClearLines()
 	e.Score.AddLines(lines)
+
+	e.CanHold = true
 
 	// Spawn next piece
 	e.CurrentPiece = e.NextPiece
@@ -122,6 +127,34 @@ func (e *Engine) Drop() {
 	}
 	e.CurrentPiece.Move(0, -1)
 	e.lockPiece()
+}
+
+// Hold stores the current piece or swaps it with the held piece.
+func (e *Engine) Hold() {
+	if !e.CanHold || e.GameOver {
+		return
+	}
+	e.CanHold = false
+
+	if e.HeldPiece == nil {
+		// First hold: store current, spawn next
+		held := e.CurrentPiece
+		e.HeldPiece = &held
+		e.CurrentPiece = e.NextPiece
+		e.NextPiece = NewPiece()
+	} else {
+		// Swap current with held
+		current := e.CurrentPiece
+		e.CurrentPiece = *e.HeldPiece
+		e.HeldPiece = &current
+
+		// Reset position and rotation to top-center spawn state
+		e.CurrentPiece.Pos = Position{
+			X: BoardWidth/2 - len(e.CurrentPiece.Shape[0])/2,
+			Y: 0,
+		}
+		e.CurrentPiece.Rotation = R0
+	}
 }
 
 // GhostBlocks returns the block positions where the current piece would land.

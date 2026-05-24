@@ -171,7 +171,38 @@ func (m Model) renderInfo() string {
 		fmt.Sprintf("%s Quit", keyStyle.Render(" Q ")),
 	)
 
-	info := lipgloss.JoinVertical(lipgloss.Left, score, level, lines, "\n", nextPiece.String(), legend)
+	// Render held piece (if any)
+	var heldPieceStr string
+	if m.Game.HeldPiece != nil {
+		var heldBuilder strings.Builder
+		heldBuilder.WriteString("\nHOLD:\n")
+
+		heldGrid := make([][]int, 4)
+		for i := range heldGrid {
+			heldGrid[i] = make([]int, 4)
+		}
+		for _, block := range m.Game.HeldPiece.Blocks() {
+			pX := block.X - m.Game.HeldPiece.Pos.X
+			pY := block.Y - m.Game.HeldPiece.Pos.Y
+			if pX >= 0 && pX < 4 && pY >= 0 && pY < 4 {
+				heldGrid[pY][pX] = m.Game.HeldPiece.ColorIndex
+			}
+		}
+		for _, row := range heldGrid {
+			for _, cell := range row {
+				if cell != 0 {
+					color := blockColors[cell]
+					heldBuilder.WriteString(lipgloss.NewStyle().Foreground(color).Render("██"))
+				} else {
+					heldBuilder.WriteString("  ")
+				}
+			}
+			heldBuilder.WriteString("\n")
+		}
+		heldPieceStr = heldBuilder.String()
+	}
+
+	info := lipgloss.JoinVertical(lipgloss.Left, score, level, lines, "\n", nextPiece.String(), heldPieceStr, "\n", legend)
 	return infoStyle.Render(info)
 }
 

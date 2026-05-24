@@ -58,6 +58,10 @@ func (m Model) handleKeyMsg(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	// Normal game keys
 	switch msg.String() {
+	case "c", "C":
+		if !m.isPaused {
+			m.Game.Hold()
+		}
 	case "q", "Q":
 		m.isQuitting = true
 		return m, nil

@@ -56,6 +56,18 @@ func TestUpdateMovement(t *testing.T) {
 	}
 }
 
+func TestHoldKey(t *testing.T) {
+	m := InitialModel()
+	m2, _ := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("c")})
+	model := m2.(Model)
+	if model.Game.HeldPiece == nil {
+		t.Error("Expected held piece after pressing 'c'")
+	}
+	if model.Game.CanHold {
+		t.Error("Expected CanHold to be false after holding")
+	}
+}
+
 func TestHardDropGameOverSync(t *testing.T) {
 	m := InitialModel()
 	// Fill the top 2 rows almost completely (leave column 9 empty so ClearLines
