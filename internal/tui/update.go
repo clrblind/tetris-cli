@@ -83,6 +83,9 @@ func (m Model) handleKeyMsg(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case " ": // Spacebar
 		if !m.isPaused {
 			m.Game.Drop()
+			if m.Game.GameOver {
+				m.isGameOver = true
+			}
 		}
 	}
 	return m, nil
