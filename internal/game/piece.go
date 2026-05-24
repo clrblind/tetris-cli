@@ -16,6 +16,7 @@ type Piece struct {
 	Pos        Position
 	Type       int
 	ColorIndex int
+	Rotation   Rotation
 }
 
 var shapes = [][][]int{
@@ -46,6 +47,7 @@ func NewPiece() Piece {
 		Pos:        startPos,
 		Type:       pieceType,
 		ColorIndex: pieceType + 1, // Use piece type as color index (1-7)
+		Rotation:   R0,
 	}
 }
 
@@ -63,6 +65,7 @@ func (p *Piece) Rotate() {
 		}
 	}
 	p.Shape = newShape
+	p.Rotation = (p.Rotation + 1) % 4
 }
 
 // Move moves the piece by the given delta.

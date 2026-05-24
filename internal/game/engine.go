@@ -76,18 +76,40 @@ func (e *Engine) MoveRight() {
 	}
 }
 
-// Rotate rotates the current piece if the new orientation is valid.
+// Rotate rotates the current piece using SRS wall kicks.
 func (e *Engine) Rotate() {
 	if e.GameOver {
 		return
 	}
-	e.CurrentPiece.Rotate()
-	if !e.Board.IsValidPosition(e.CurrentPiece) {
-		// Rotate back
-		for i := 0; i < 3; i++ {
-			e.CurrentPiece.Rotate()
+
+	from := e.CurrentPiece.Rotation
+	to := (from + 1) % 4
+	offsets := WallKickData(e.CurrentPiece.Type, from, to)
+
+	for _, offset := range offsets {
+		// Save state
+		originalShape := make([][]int, len(e.CurrentPiece.Shape))
+		for i := range e.CurrentPiece.Shape {
+			originalShape[i] = make([]int, len(e.CurrentPiece.Shape[i]))
+			copy(originalShape[i], e.CurrentPiece.Shape[i])
 		}
+		originalPos := e.CurrentPiece.Pos
+		originalRotation := e.CurrentPiece.Rotation
+
+		// Apply offset and rotate
+		e.CurrentPiece.Move(offset.X, offset.Y)
+		e.CurrentPiece.Rotate()
+
+		if e.Board.IsValidPosition(e.CurrentPiece) {
+			return // success
+		}
+
+		// Revert
+		e.CurrentPiece.Pos = originalPos
+		e.CurrentPiece.Rotation = originalRotation
+		e.CurrentPiece.Shape = originalShape
 	}
+	// All 5 offsets failed — piece stays in original position/rotation
 }
 
 // Drop moves the piece down until it locks.
