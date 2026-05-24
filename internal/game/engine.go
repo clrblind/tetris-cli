@@ -123,3 +123,18 @@ func (e *Engine) Drop() {
 	e.CurrentPiece.Move(0, -1)
 	e.lockPiece()
 }
+
+// GhostBlocks returns the block positions where the current piece would land.
+func (e *Engine) GhostBlocks() []Position {
+	if e.GameOver || e.CurrentPiece.Pos.Y < 0 {
+		return nil
+	}
+
+	ghostPiece := e.CurrentPiece
+	for e.Board.IsValidPosition(ghostPiece) {
+		ghostPiece.Move(0, 1)
+	}
+	ghostPiece.Move(0, -1)
+
+	return ghostPiece.Blocks()
+}

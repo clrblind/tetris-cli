@@ -35,6 +35,8 @@ func (m Model) Init() tea.Cmd {
 // Styles
 var (
 	// Colors for the blocks, 0 is empty
+	ghostColor = lipgloss.Color("8")
+
 	blockColors = []lipgloss.Color{
 		lipgloss.Color("0"), // Empty
 		lipgloss.Color("1"), // Red (I)

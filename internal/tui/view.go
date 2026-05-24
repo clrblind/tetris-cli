@@ -41,12 +41,29 @@ func (m Model) renderBoard() string {
 		}
 	}
 
+	// Calculate ghost piece positions
+	ghostPositions := make(map[game.Position]bool)
+	if !m.isGameOver {
+		for _, block := range m.Game.GhostBlocks() {
+			if block.Y >= 0 && block.Y < game.BoardHeight &&
+				block.X >= 0 && block.X < game.BoardWidth &&
+				displayBoard[block.Y][block.X] == 0 {
+				ghostPositions[block] = true
+			}
+		}
+	}
+
 	var rows []string
 	for y := 0; y < game.BoardHeight; y++ {
 		var rowParts []string
 		for x := 0; x < game.BoardWidth; x++ {
-			color := blockColors[displayBoard[y][x]]
-			rowParts = append(rowParts, lipgloss.NewStyle().Foreground(color).Render(blockStr))
+			pos := game.Position{X: x, Y: y}
+			if ghostPositions[pos] {
+				rowParts = append(rowParts, lipgloss.NewStyle().Foreground(ghostColor).Render("░░"))
+			} else {
+				color := blockColors[displayBoard[y][x]]
+				rowParts = append(rowParts, lipgloss.NewStyle().Foreground(color).Render(blockStr))
+			}
 		}
 		singleRow := strings.Join(rowParts, "")
 		// Repeat row for vertical scaling
