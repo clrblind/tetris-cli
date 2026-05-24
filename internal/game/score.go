@@ -33,6 +33,9 @@ func (s *ScoreManager) AddLines(lines int) {
 		return
 	}
 	s.LinesCleared += lines
+	if lines > 4 {
+		lines = 4
+	}
 	s.Score += scoreMultipliers[lines] * s.Level
 	s.Level = 1 + (s.LinesCleared / LinesPerLevel)
 }
