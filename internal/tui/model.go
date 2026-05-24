@@ -13,7 +13,6 @@ type Model struct {
 	isPaused   bool
 	isGameOver bool
 	isQuitting bool
-	viewCache  string
 	width      int
 	height     int
 }
