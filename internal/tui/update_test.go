@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
+
+	"tetris-cli/internal/game"
 )
 
 func TestUpdateKeyMsg(t *testing.T) {
@@ -51,5 +53,24 @@ func TestUpdateMovement(t *testing.T) {
 	newModel = m3.(Model)
 	if newModel.Game.CurrentPiece.Pos.X != initialX {
 		t.Errorf("Expected X to be back to %d, got %d", initialX, newModel.Game.CurrentPiece.Pos.X)
+	}
+}
+
+func TestHardDropGameOverSync(t *testing.T) {
+	m := InitialModel()
+	// Fill the top 2 rows almost completely (leave column 9 empty so ClearLines
+	// doesn't clear them). This blocks any new piece from spawning.
+	for x := 0; x < game.BoardWidth-1; x++ {
+		for y := 0; y < 2; y++ {
+			m.Game.Board[y][x] = 7
+		}
+	}
+	// Move piece to row 3 so it starts in a valid position (rows 2+ are empty)
+	m.Game.CurrentPiece.Pos.Y = 3
+	// Hard drop triggers lockPiece → new piece can't spawn → game over
+	m2, _ := m.Update(tea.KeyMsg{Type: tea.KeySpace})
+	model := m2.(Model)
+	if !model.isGameOver {
+		t.Errorf("Expected isGameOver to be true immediately after game-over-causing hard drop")
 	}
 }

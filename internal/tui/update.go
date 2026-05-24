@@ -79,6 +79,9 @@ func (m Model) handleKeyMsg(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		if !m.isPaused {
 			// Soft drop
 			m.Game.Tick()
+			if m.Game.GameOver {
+				m.isGameOver = true
+			}
 		}
 	case " ": // Spacebar
 		if !m.isPaused {
