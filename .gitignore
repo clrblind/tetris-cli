@@ -15,7 +15,7 @@
 # vendor/
 
 # Go project specific
-tetris-cli
+/tetris-cli
 .beads/
 AGENTS.md
 
