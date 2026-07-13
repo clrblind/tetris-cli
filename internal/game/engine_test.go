@@ -88,30 +88,6 @@ func TestWallKickTRotateAtRightWall(t *testing.T) {
 	}
 }
 
-func TestGhostBlocks(t *testing.T) {
-	e := NewEngine()
-	initialY := e.CurrentPiece.Pos.Y
-	ghost := e.GhostBlocks()
-
-	if len(ghost) == 0 {
-		t.Fatal("Expected ghost blocks, got none")
-	}
-
-	// Ghost should be below the current piece
-	for _, gb := range ghost {
-		if gb.Y <= initialY {
-			t.Errorf("Expected ghost block Y > %d, got %d", initialY, gb.Y)
-		}
-	}
-
-	// Ghost should be at valid positions on the board
-	for _, gb := range ghost {
-		if gb.Y < 0 || gb.Y >= BoardHeight || gb.X < 0 || gb.X >= BoardWidth {
-			t.Errorf("Ghost block out of bounds: %v", gb)
-		}
-	}
-}
-
 func TestHoldFirstTime(t *testing.T) {
 	e := NewEngine()
 	initialType := e.CurrentPiece.Type

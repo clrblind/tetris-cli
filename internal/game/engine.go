@@ -148,26 +148,13 @@ func (e *Engine) Hold() {
 		e.CurrentPiece = *e.HeldPiece
 		e.HeldPiece = &current
 
-		// Reset position and rotation to top-center spawn state
+		// Reset to spawn state
 		e.CurrentPiece.Pos = Position{
-			X: BoardWidth/2 - len(e.CurrentPiece.Shape[0])/2,
+			X: BoardWidth/2 - len(shapes[e.CurrentPiece.Type][0])/2,
 			Y: 0,
 		}
 		e.CurrentPiece.Rotation = R0
+		e.CurrentPiece.Shape = shapes[e.CurrentPiece.Type]
 	}
 }
 
-// GhostBlocks returns the block positions where the current piece would land.
-func (e *Engine) GhostBlocks() []Position {
-	if e.GameOver || e.CurrentPiece.Pos.Y < 0 {
-		return nil
-	}
-
-	ghostPiece := e.CurrentPiece
-	for e.Board.IsValidPosition(ghostPiece) {
-		ghostPiece.Move(0, 1)
-	}
-	ghostPiece.Move(0, -1)
-
-	return ghostPiece.Blocks()
-}
